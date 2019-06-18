@@ -30,7 +30,7 @@ namespace Bot.Services
 
         public async Task StartAsync()
         {
-            await _discord.LoginAsync(TokenType.Bot, TokenConfiguration.TokenConfig.DiscordToken);
+            await _discord.LoginAsync(TokenType.Bot, TokenConfiguration.Config.DiscordToken);
             await _discord.StartAsync();
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _provider);

@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Bot.Configurations;
 using Bot.Models;
 using Bunq.Sdk.Context;
 using Bunq.Sdk.Model.Generated.Endpoint;
@@ -21,12 +22,13 @@ namespace Bot.Modules
             Console.WriteLine("Balance started");
             var allMonetaryAccounts = MonetaryAccountBank.List().Value;
 
-            var mainMonetaryAccount = allMonetaryAccounts.FirstOrDefault(f => f.Description == "Persoonlijk");
+            var mainMonetaryAccount = allMonetaryAccounts.FirstOrDefault(f => f.Description == TokenConfiguration.Config.MainMonetaryAccountName);
 
             var now = DateTime.Now;
-            var payday = now.Day > 26
-                ? new DateTime(now.AddMonths(1).Year, now.AddMonths(1).Month, 26)
-                : new DateTime(now.Year, now.Month, 26);
+            var paydayDayOfMonth = TokenConfiguration.Config.PaydayDayOfMonth;
+            var payday = now.Day > paydayDayOfMonth
+                ? new DateTime(now.AddMonths(1).Year, now.AddMonths(1).Month, paydayDayOfMonth)
+                : new DateTime(now.Year, now.Month, paydayDayOfMonth);
             var daysLeft = (payday - now).Days;
 
             var client = new RestClient("https://www.ah.nl/service/rest/delegate?url=/producten/product/wi230720/ah-frikandelbroodje");

@@ -13,7 +13,7 @@ namespace Bot.Configurations
 
         private const string ConfigFile = "Config.json";
 
-        public static ConfigData TokenConfig;
+        public static ConfigData Config;
 
         static TokenConfiguration()
         {
@@ -22,14 +22,14 @@ namespace Bot.Configurations
 
             if (!File.Exists(ConfigFolder + "/" + ConfigFile))
             {
-                TokenConfig = new ConfigData();
-                var json = JsonConvert.SerializeObject(TokenConfig, Formatting.Indented);
+                Config = new ConfigData();
+                var json = JsonConvert.SerializeObject(Config, Formatting.Indented);
                 File.WriteAllText(ConfigFolder + "/" + ConfigFile, json);
             }
             else
             {
                 var json = File.ReadAllText(ConfigFolder + "/" + ConfigFile);
-                TokenConfig = JsonConvert.DeserializeObject<ConfigData>(json);
+                Config = JsonConvert.DeserializeObject<ConfigData>(json);
             }
         }
     }

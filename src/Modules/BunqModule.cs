@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Bot.Configurations;
+using Bot.Helpers;
 using Bot.Models;
 using Bunq.Sdk.Context;
 using Bunq.Sdk.Model.Generated.Endpoint;
@@ -16,10 +17,11 @@ namespace Bot.Modules
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public class BunqModule : ModuleBase<SocketCommandContext>
     {
+        RichnessRater richnessRater = new RichnessRater();
+
         [Command("balance")]
         public async Task Balance()
         {
-            Console.WriteLine("Balance started");
             var allMonetaryAccounts = MonetaryAccountBank.List().Value;
 
             var mainMonetaryAccount = allMonetaryAccounts.FirstOrDefault(f => f.Description == TokenConfiguration.Config.MainMonetaryAccountName);
@@ -44,15 +46,13 @@ namespace Bot.Modules
                 return;
             }
 
+            var budget = double.Parse(mainMonetaryAccount?.Balance.Value, CultureInfo.InvariantCulture);
             var amountOfFrikandelBroodjes = (double.Parse(mainMonetaryAccount?.Balance.Value, CultureInfo.InvariantCulture) / frikandelBroodjePrice.Value).ToString("0");
 
-            Console.WriteLine("Replying..");
-
-            await ReplyAsync($"Thom zijn budget voor deze maand is €{mainMonetaryAccount?.Balance.Value}. Dat is weinig! \n" +
+            await ReplyAsync($"{TokenConfiguration.Config.Name} zijn budget voor deze maand is €{budget}. {richnessRater.GetRichnessJudgement(budget)} \n" +
                              $"Hier kan hij {amountOfFrikandelBroodjes} frikandelbroodjes mee kopen met de huidige prijs van €{frikandelBroodjePrice}.\n" +
                              $"Over {daysLeft} dagen komt er weer een hoop geld bij.");
 
-            Console.WriteLine("Balance executed");
         }
 
         [Command("plex")]

@@ -9,5 +9,11 @@ namespace Bot.Structs
         public string BunqApiKey;
 
         public string DiscordToken;
+
+        public string Name;
+
+        public string MainMonetaryAccountName;
+
+        public int PaydayDayOfMonth;
     }
 }

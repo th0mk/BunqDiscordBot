@@ -17,9 +17,10 @@ namespace Bot.Modules
     [SuppressMessage("ReSharper", "StringLiteralTypo")]
     public class BunqModule : ModuleBase<SocketCommandContext>
     {
-        RichnessRater richnessRater = new RichnessRater();
+        readonly RichnessRater _richnessRater = new RichnessRater();
 
         [Command("balance")]
+        [Alias("budget")]
         public async Task Balance()
         {
             var allMonetaryAccounts = MonetaryAccountBank.List().Value;
@@ -31,7 +32,7 @@ namespace Bot.Modules
             var payday = now.Day > paydayDayOfMonth
                 ? new DateTime(now.AddMonths(1).Year, now.AddMonths(1).Month, paydayDayOfMonth)
                 : new DateTime(now.Year, now.Month, paydayDayOfMonth);
-            var daysLeft = (payday - now).Days;
+            var daysLeft = (payday - now).Days + 1;
 
             var client = new RestClient("https://www.ah.nl/service/rest/delegate?url=/producten/product/wi230720/ah-frikandelbroodje");
             var request = new RestRequest(Method.GET);
@@ -42,16 +43,16 @@ namespace Bot.Modules
 
             if (frikandelBroodjePrice == null)
             {
-                await ReplyAsync($"AH API kapot.");
+                await ReplyAsync("AH API kapot.");
                 return;
             }
 
             var budget = double.Parse(mainMonetaryAccount?.Balance.Value, CultureInfo.InvariantCulture);
             var amountOfFrikandelBroodjes = (double.Parse(mainMonetaryAccount?.Balance.Value, CultureInfo.InvariantCulture) / frikandelBroodjePrice.Value).ToString("0");
 
-            await ReplyAsync($"{TokenConfiguration.Config.Name} zijn budget voor deze maand is €{budget}. {richnessRater.GetRichnessJudgement(budget)} \n" +
+            await ReplyAsync($"{TokenConfiguration.Config.Name} zijn budget voor deze maand is €{budget}. {_richnessRater.GetRichnessJudgement(budget)} \n" +
                              $"Hier kan hij {amountOfFrikandelBroodjes} frikandelbroodjes mee kopen met de huidige prijs van €{frikandelBroodjePrice}.\n" +
-                             $"Over {daysLeft} dagen komt er weer een hoop geld bij.");
+                             $"Over {daysLeft} " + (daysLeft == 1 ? "dag" : "dagen") + " komt er weer een hoop geld bij.");
 
         }
 

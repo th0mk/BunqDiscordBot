@@ -59,12 +59,9 @@ namespace Bot
             .AddSingleton<Random>()                 // Add random to the collection
             .AddSingleton(Configuration);           // Add the configuration to the collection
 
-            if (!string.IsNullOrEmpty(TokenConfiguration.Config.BunqApiKey))
-            {
-                ApiContext apiContext = ApiContext.Create(ApiEnvironmentType.PRODUCTION, TokenConfiguration.Config.BunqApiKey, "bunq-bot");
-                apiContext.Save();
-                BunqContext.LoadApiContext(apiContext);
-            }
+            ApiContext apiContext = ApiContext.Create(ApiEnvironmentType.PRODUCTION, TokenConfiguration.Config.BunqApiKey, "bunq-bot");
+            apiContext.Save();
+            BunqContext.LoadApiContext(apiContext);
         }
     }
 }

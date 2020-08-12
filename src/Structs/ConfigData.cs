@@ -15,5 +15,7 @@ namespace Bot.Structs
         public string MainMonetaryAccountName;
 
         public int PaydayDayOfMonth;
+
+        public string CoronaTestBearerToken;
     }
 }

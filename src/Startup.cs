@@ -44,24 +44,31 @@ namespace Bot
         private void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
-            {                                       // Add discord to the collection
-                LogLevel = LogSeverity.Verbose,     // Tell the logger to give Verbose amount of info
-                MessageCacheSize = 1000             // Cache 1,000 messages per channel
-            }))
-            .AddSingleton(new CommandService(new CommandServiceConfig
-            {                                       // Add the command service to the collection
-                LogLevel = LogSeverity.Verbose,     // Tell the logger to give Verbose amount of info
-                DefaultRunMode = RunMode.Async,     // Force all commands to run async by default
-            }))
-            .AddSingleton<CommandHandler>()         // Add the command handler to the collection
-            .AddSingleton<StartupService>()         // Add startupservice to the collection
-            .AddSingleton<LoggingService>()         // Add loggingservice to the collection
-            .AddSingleton<Random>()                 // Add random to the collection
-            .AddSingleton(Configuration);           // Add the configuration to the collection
+                {
+                    // Add discord to the collection
+                    LogLevel = LogSeverity.Verbose, // Tell the logger to give Verbose amount of info
+                    MessageCacheSize = 1000 // Cache 1,000 messages per channel
+                }))
+                .AddSingleton(new CommandService(new CommandServiceConfig
+                {
+                    // Add the command service to the collection
+                    LogLevel = LogSeverity.Verbose, // Tell the logger to give Verbose amount of info
+                    DefaultRunMode = RunMode.Async, // Force all commands to run async by default
+                }))
+                .AddSingleton<CommandHandler>() // Add the command handler to the collection
+                .AddSingleton<StartupService>() // Add startupservice to the collection
+                .AddSingleton<LoggingService>() // Add loggingservice to the collection
+                .AddSingleton<Random>() // Add random to the collection
+                .AddSingleton(Configuration) // Add the configuration to the collection
+                .AddSingleton<TimerService>();
 
-            ApiContext apiContext = ApiContext.Create(ApiEnvironmentType.PRODUCTION, TokenConfiguration.Config.BunqApiKey, "bunq-bot");
-            apiContext.Save();
-            BunqContext.LoadApiContext(apiContext);
+
+            if (!string.IsNullOrWhiteSpace(TokenConfiguration.Config.BunqApiKey))
+            {
+                ApiContext apiContext = ApiContext.Create(ApiEnvironmentType.PRODUCTION, TokenConfiguration.Config.BunqApiKey, "bunq-bot");
+                apiContext.Save();
+                BunqContext.LoadApiContext(apiContext);
+            }
         }
     }
 }
